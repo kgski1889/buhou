@@ -3,93 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>2026 DIGITAL BUHOU</title>
 
 <style>
-
-body{
-margin:0;
-background:#333;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+html,body{
+    margin:0;
+    height:100%;
+    background:#1f1f1f;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
 }
-
-img{
-max-width:95vw;
-max-height:90vh;
-box-shadow:0 10px 30px rgba(0,0,0,.5);
-cursor:pointer;
-border-radius:8px;
+#book{
+    width:100vw;
+    height:100vh;
 }
-
-button{
-position:fixed;
-top:50%;
-transform:translateY(-50%);
-font-size:40px;
-background:white;
-border:none;
-width:60px;
-height:60px;
-cursor:pointer;
-border-radius:50%;
+.home{
+    position:fixed;
+    top:16px;
+    left:16px;
+    z-index:1000;
+    background:#fff;
+    color:#222;
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:999px;
+    font-weight:bold;
+    box-shadow:0 2px 10px rgba(0,0,0,.25);
 }
-
-#prev{
-left:20px;
-}
-
-#next{
-right:20px;
-}
-
 </style>
-
 </head>
-
 <body>
 
-<button id="prev">◀</button>
+<a class="home" href="index.html">← HOME</a>
 
-<img id="page" src="images/1.png">
+<div id="book"></div>
 
-<button id="next">▶</button>
+<script src="page-flip.browser.min.js"></script>
 
 <script>
+const pageFlip = new St.PageFlip(
+    document.getElementById("book"),
+    {
+        width:700,
+        height:990,
+        size:"stretch",
+        minWidth:315,
+        maxWidth:1000,
+        minHeight:420,
+        maxHeight:1400,
+        showCover:true,
+        mobileScrollSupport:true,
+        useMouseEvents:true
+    }
+);
 
-let page=1;
-
-const img=document.getElementById("page");
-
-document.getElementById("next").onclick=()=>{
-
-if(page<32){
-
-page++;
-
-img.src=`images/${page}.png`;
-
+const pages = [];
+for(let i=1;i<=32;i++){
+    pages.push(`images/${i}.png`);
 }
 
-}
-
-document.getElementById("prev").onclick=()=>{
-
-if(page>1){
-
-page--;
-
-img.src=`images/${page}.png`;
-
-}
-
-}
-
+pageFlip.loadFromImages(pages);
 </script>
 
 </body>
-
 </html>
