@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>2026 DIGITAL BUHOU</title>
+
+<style>
+
+body{
+margin:0;
+background:#333;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+img{
+max-width:95vw;
+max-height:90vh;
+box-shadow:0 10px 30px rgba(0,0,0,.5);
+cursor:pointer;
+border-radius:8px;
+}
+
+button{
+position:fixed;
+top:50%;
+transform:translateY(-50%);
+font-size:40px;
+background:white;
+border:none;
+width:60px;
+height:60px;
+cursor:pointer;
+border-radius:50%;
+}
+
+#prev{
+left:20px;
+}
+
+#next{
+right:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<button id="prev">◀</button>
+
+<img id="page" src="images/1.png">
+
+<button id="next">▶</button>
+
+<script>
+
+let page=1;
+
+const img=document.getElementById("page");
+
+document.getElementById("next").onclick=()=>{
+
+if(page<32){
+
+page++;
+
+img.src=`images/${page}.png`;
+
+}
+
+}
+
+document.getElementById("prev").onclick=()=>{
+
+if(page>1){
+
+page--;
+
+img.src=`images/${page}.png`;
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
