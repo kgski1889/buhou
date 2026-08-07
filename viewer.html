@@ -66,6 +66,38 @@ html,body{
     background:#fff;
     display:block;
 }
+    #pageNumber{
+
+position:fixed;
+
+bottom:24px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+background:rgba(0,0,0,.55);
+
+backdrop-filter:blur(12px);
+
+padding:10px 20px;
+
+border-radius:999px;
+
+color:white;
+
+font-size:15px;
+
+font-weight:600;
+
+letter-spacing:1px;
+
+z-index:9999;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,.35);
+
+}
 </style>
 </head>
 <body>
@@ -109,6 +141,14 @@ const pageFlip = new St.PageFlip(book,{
 });
 
 pageFlip.loadFromHTML(document.querySelectorAll(".page"));
+    const pageNumber = document.getElementById("pageNumber");
+
+pageFlip.on("flip", (e)=>{
+
+pageNumber.innerHTML =
+`${e.data + 1} / 32`;
+
+});
 </script>
 
 </body>
