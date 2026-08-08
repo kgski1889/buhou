@@ -2,7 +2,8 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 <title>2026 DIGITAL BUHOU</title>
 <style>
 html,body{
@@ -154,13 +155,6 @@ transform:scale(1.08);
 <div id="pageNumber">
 1 / 32
 </div>
-    <div id="zoomControls">
-
-<button id="zoomOut">－</button>
-
-<button id="zoomIn">＋</button>
-
-</div>
 
 <script src="page-flip.browser.min.js"></script>
 <script>
@@ -218,6 +212,62 @@ zoom=Math.max(.5,zoom-.1);
 document.getElementById("book").style.transform=`scale(${zoom})`;
 
 }
+    // 2本指ピンチで拡大・縮小
+let pinchStartDistance = 0;
+let currentScale = 1;
+
+function getDistance(touches){
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+book.addEventListener("touchstart", function(e){
+
+    if(e.touches.length === 2){
+        pinchStartDistance = getDistance(e.touches);
+    }
+
+}, {passive:false});
+
+
+book.addEventListener("touchmove", function(e){
+
+    if(e.touches.length === 2){
+
+        e.preventDefault();
+
+        const distance = getDistance(e.touches);
+
+        if(pinchStartDistance > 0){
+
+            const ratio = distance / pinchStartDistance;
+
+            currentScale *= ratio;
+
+            currentScale = Math.min(
+                Math.max(currentScale, 1),
+                2
+            );
+
+            book.style.transform =
+                `scale(${currentScale})`;
+
+            pinchStartDistance = distance;
+        }
+    }
+
+}, {passive:false});
+
+
+book.addEventListener("touchend", function(e){
+
+    if(e.touches.length < 2){
+        pinchStartDistance = 0;
+    }
+
+});
 </script>
 
 </body>
