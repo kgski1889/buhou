@@ -175,34 +175,45 @@ for(let i=1;i<=32;i++){
 }
 
 const pageFlip = new St.PageFlip(book,{
-  width:700,
-  height:990,
-  size:"stretch",
-  minWidth:315,
-  maxWidth:1200,
-  minHeight:420,
-  maxHeight:1600,
-  showCover:true,
-  usePortrait:true,
-  mobileScrollSupport:true,
-  startPage:0,
-  autoSize:true,
-  maxShadowOpacity:0.5
+    width:700,
+    height:990,
+    size:"stretch",
+    minWidth:315,
+    maxWidth:1200,
+    minHeight:420,
+    maxHeight:1600,
+    showCover:true,
+    usePortrait:true,
+    mobileScrollSupport:true,
+    startPage:0,
+    autoSize:true,
+    maxShadowOpacity:0.25
 });
 
-pageFlip.loadFromHTML(document.querySelectorAll(".page"));
-    const pageNumber = document.getElementById("pageNumber");
+pageFlip.loadFromHTML(
+    document.querySelectorAll(".page")
+);
+
+
+/* ページ番号 */
+
+const pageNumber =
+    document.getElementById("pageNumber");
 
 pageFlip.on("flip", (e)=>{
 
-pageNumber.innerHTML =
-`${e.data + 1} / 32`;
+    pageNumber.innerHTML =
+        `${e.data + 1} / 32`;
 
 });
-    
-// 2本指ピンチ ＋ 拡大中の1本指スクロール
+
+
+/* =========================
+   ズーム・移動
+========================= */
 
 let pinchStartDistance = 0;
+
 let currentScale = 1;
 
 let translateX = 0;
@@ -213,6 +224,10 @@ let lastY = 0;
 
 let isPanning = false;
 
+let isTwoFingerGesture = false;
+
+
+/* 2本の指の距離 */
 
 function getDistance(touches){
 
@@ -224,9 +239,14 @@ function getDistance(touches){
         touches[0].clientY -
         touches[1].clientY;
 
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.sqrt(
+        dx * dx + dy * dy
+    );
+
 }
 
+
+/* 表示位置を更新 */
 
 function updateTransform(){
 
@@ -236,153 +256,202 @@ function updateTransform(){
 }
 
 
-/* タッチ開始 */
+/* =========================
+   タッチ開始
+========================= */
 
-document.addEventListener("touchstart", function(e){
+document.addEventListener(
+    "touchstart",
+    function(e){
 
-    /* 拡大中の1本指 */
+        /* 2本指を検知 */
 
-    if(
-        currentScale > 1 &&
-        e.touches.length === 1
-    ){
+        if(e.touches.length === 2){
 
-        isPanning = true;
+            isTwoFingerGesture = true;
 
-        lastX = e.touches[0].clientX;
-        lastY = e.touches[0].clientY;
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        return;
-    }
-
-
-    /* 2本指 */
-
-    if(e.touches.length === 2){
-
-        pinchStartDistance =
-            getDistance(e.touches);
-
-        isPanning = false;
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-          return;
-    }
-
-}, {
-    passive:false,
-    capture:true
-});
-
-
-/* タッチ移動 */
-
-document.addEventListener("touchmove", function(e){
-
-    /* 拡大中の1本指移動 */
-
-    if(
-        currentScale > 1 &&
-        e.touches.length === 1 &&
-        isPanning
-    ){
-
-        const x =
-            e.touches[0].clientX;
-
-        const y =
-            e.touches[0].clientY;
-
-
-        translateX +=
-            x - lastX;
-
-        translateY +=
-            y - lastY;
-
-
-        lastX = x;
-        lastY = y;
-
-
-        updateTransform();
-
-        e.preventDefault();
-        e.stopImmediatePropagation();
-
-        return;
-    }
-
-
-    /* 2本指ピンチ */
-
-    if(e.touches.length === 2){
-
-        const distance =
-            getDistance(e.touches);
-
-
-        if(pinchStartDistance > 0){
-
-            const ratio =
-                distance / pinchStartDistance;
-
-
-            currentScale *= ratio;
-
-
-            currentScale =
-                Math.min(
-                    Math.max(currentScale, 1),
-                    2
-                );
-              if(currentScale === 1){
-
-    translateX = 0;
-    translateY = 0;
-
-}
-
-
-            updateTransform();
-
+            isPanning = false;
 
             pinchStartDistance =
-                distance;
+                getDistance(e.touches);
 
             e.preventDefault();
+
+            e.stopImmediatePropagation();
+
+            return;
+        }
+
+
+        /* 拡大中の1本指 */
+
+        if(
+            currentScale > 1 &&
+            e.touches.length === 1 &&
+            !isTwoFingerGesture
+        ){
+
+            isPanning = true;
+
+            lastX =
+                e.touches[0].clientX;
+
+            lastY =
+                e.touches[0].clientY;
+
+            e.preventDefault();
+
             e.stopImmediatePropagation();
 
         }
 
+    },
+    {
+        passive:false,
+        capture:true
     }
-
-}, {
-    passive:false,
-    capture:true
-});
+);
 
 
-/* タッチ終了 */
+/* =========================
+   タッチ移動
+========================= */
 
-document.addEventListener("touchend", function(e){
+document.addEventListener(
+    "touchmove",
+    function(e){
 
-    if(e.touches.length === 0){
+        /* 2本指ズーム */
 
-        pinchStartDistance = 0;
-        isPanning = false;
+        if(
+            isTwoFingerGesture &&
+            e.touches.length === 2
+        ){
 
+            const distance =
+                getDistance(e.touches);
+
+            if(pinchStartDistance > 0){
+
+                const ratio =
+                    distance / pinchStartDistance;
+
+                currentScale *= ratio;
+
+                currentScale =
+                    Math.min(
+                        Math.max(
+                            currentScale,
+                            1
+                        ),
+                        2
+                    );
+
+
+                /* 1倍に戻ったら中央へ */
+
+                if(currentScale === 1){
+
+                    translateX = 0;
+                    translateY = 0;
+
+                }
+
+
+                updateTransform();
+
+                pinchStartDistance =
+                    distance;
+
+            }
+
+            e.preventDefault();
+
+            e.stopImmediatePropagation();
+
+            return;
+        }
+
+
+        /* 拡大中の1本指移動 */
+
+        if(
+            currentScale > 1 &&
+            isPanning &&
+            e.touches.length === 1
+        ){
+
+            const x =
+                e.touches[0].clientX;
+
+            const y =
+                e.touches[0].clientY;
+
+
+            translateX +=
+                x - lastX;
+
+            translateY +=
+                y - lastY;
+
+
+            lastX = x;
+            lastY = y;
+
+
+            updateTransform();
+
+            e.preventDefault();
+
+            e.stopImmediatePropagation();
+
+            return;
+        }
+
+
+        /* 2本指ジェスチャー中は
+           PageFlipに渡さない */
+
+        if(isTwoFingerGesture){
+
+            e.preventDefault();
+
+            e.stopImmediatePropagation();
+
+        }
+
+    },
+    {
+        passive:false,
+        capture:true
     }
+);
 
-}, {
-    passive:false,
-    capture:true
-});
+
+/* =========================
+   タッチ終了
+========================= */
+
+document.addEventListener(
+    "touchend",
+    function(e){
+
+        if(e.touches.length === 0){
+
+            pinchStartDistance = 0;
+
+            isPanning = false;
+
+            isTwoFingerGesture = false;
+
+        }
+
+    },
+    {
+        passive:false,
+        capture:true
+    }
+);
 </script>
 
 </body>
