@@ -1,388 +1,628 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>2026 DIGITAL BUHOU | 関西学院大学体育会スキー競技部</title>
+<title>2026 部報 | 関西学院大学体育会スキー競技部</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
 
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-    }
+*{
+    box-sizing:border-box;
+}
 
-    body {
-      overflow: hidden;
-      font-family: Arial, "Noto Sans JP", sans-serif;
-      color: #fff;
+html,
+body{
+    margin:0;
+    width:100%;
+    height:100%;
+}
 
-      background:
+body{
+
+    overflow:hidden;
+
+    font-family:
+        "Times New Roman",
+        "Yu Mincho",
+        "Hiragino Mincho ProN",
+        serif;
+
+    color:white;
+
+    background:
+
         radial-gradient(
-          circle at 50% 42%,
-          rgba(120, 150, 180, 0.28) 0%,
-          rgba(40, 55, 70, 0.18) 25%,
-          rgba(8, 12, 18, 0.85) 65%,
-          #05070a 100%
+            circle at 50% 60%,
+            rgba(180,140,80,.18),
+            transparent 28%
         ),
-        linear-gradient(
-          135deg,
-          #182531 0%,
-          #080c11 55%,
-          #030405 100%
-        );
-    }
 
-    /* 雪山をイメージした光 */
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-
-      background:
-        linear-gradient(
-          115deg,
-          transparent 35%,
-          rgba(255,255,255,0.07) 50%,
-          transparent 65%
-        );
-
-      opacity: 0.8;
-    }
-
-    .page {
-      width: 100%;
-      height: 100vh;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      position: relative;
-      padding: 30px 20px;
-    }
-
-    /* 上のタイトル */
-    .title-area {
-      text-align: center;
-      margin-bottom: 25px;
-
-      animation: fadeDown 1s ease forwards;
-    }
-
-    .small-title {
-      font-size: 12px;
-      letter-spacing: 5px;
-      opacity: 0.7;
-      margin-bottom: 10px;
-    }
-
-    h1 {
-      margin: 0;
-
-      font-size: clamp(28px, 4vw, 52px);
-      font-weight: 300;
-
-      letter-spacing: 7px;
-
-      text-shadow:
-        0 4px 20px rgba(0,0,0,0.5);
-    }
-
-    .subtitle {
-      margin-top: 12px;
-
-      font-size: 13px;
-      letter-spacing: 3px;
-
-      opacity: 0.75;
-    }
-
-    /* 表紙 */
-    .cover-area {
-      position: relative;
-
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      animation: coverAppear 1.2s ease forwards;
-    }
-
-    .cover-area::before {
-      content: "";
-
-      position: absolute;
-
-      width: 120%;
-      height: 115%;
-
-      background:
         radial-gradient(
-          ellipse,
-          rgba(255,255,255,0.22),
-          transparent 65%
-        );
+            circle at 50% 35%,
+            rgba(50,80,110,.35),
+            transparent 50%
+        ),
 
-      filter: blur(30px);
-
-      z-index: -1;
-    }
-
-    .cover {
-      display: block;
-
-      width: min(360px, 72vw);
-      max-height: 58vh;
-
-      object-fit: contain;
-
-      border-radius: 4px;
-
-      cursor: pointer;
-
-      box-shadow:
-        0 35px 80px rgba(0,0,0,0.7),
-        0 12px 30px rgba(0,0,0,0.5);
-
-      transition:
-        transform 0.45s ease,
-        box-shadow 0.45s ease;
-    }
-
-    .cover:hover {
-      transform: translateY(-8px) scale(1.025);
-
-      box-shadow:
-        0 45px 100px rgba(0,0,0,0.8),
-        0 18px 40px rgba(0,0,0,0.6);
-    }
-
-    /* ボタン */
-    .open-button {
-      margin-top: 28px;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      min-width: 230px;
-      padding: 14px 28px;
-
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 999px;
-
-      color: #fff;
-      text-decoration: none;
-
-      background: rgba(255,255,255,0.08);
-
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      font-size: 13px;
-      font-weight: 600;
-
-      letter-spacing: 3px;
-
-      box-shadow:
-        0 12px 30px rgba(0,0,0,0.35);
-
-      transition: all 0.3s ease;
-
-      animation: fadeUp 1.2s ease forwards;
-    }
-
-    .open-button:hover {
-      background: rgba(255,255,255,0.18);
-
-      border-color: rgba(255,255,255,0.65);
-
-      transform: translateY(-3px);
-
-      box-shadow:
-        0 18px 40px rgba(0,0,0,0.5);
-    }
-
-    .open-button span {
-      margin-right: 10px;
-      font-size: 17px;
-    }
-
-    /* 下のアクセント */
-    .bottom-line {
-      position: absolute;
-
-      bottom: 24px;
-
-      width: min(500px, 70vw);
-
-      height: 1px;
-
-      background:
         linear-gradient(
-          90deg,
-          transparent,
-          rgba(255,255,255,0.35),
-          transparent
+            135deg,
+            #182738 0%,
+            #0b121b 45%,
+            #030507 100%
         );
+}
+
+
+/* 光の演出 */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+
+        radial-gradient(
+            ellipse at 50% 70%,
+            rgba(255,190,100,.16),
+            transparent 30%
+        );
+
+    filter:blur(20px);
+
+}
+
+
+/* メイン */
+
+.page{
+
+    width:100%;
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    position:relative;
+
+    padding:20px;
+
+}
+
+
+/* 上部 */
+
+.header{
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+    animation:
+        fadeDown 1s ease forwards;
+
+}
+
+
+.team-name{
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size:
+        clamp(9px,1.2vw,14px);
+
+    letter-spacing:
+        5px;
+
+    color:
+        #e8c987;
+
+    margin-bottom:12px;
+
+    font-weight:500;
+
+}
+
+
+.title{
+
+    margin:0;
+
+    font-size:
+        clamp(38px,5vw,68px);
+
+    font-weight:400;
+
+    letter-spacing:
+        8px;
+
+    line-height:1;
+
+    text-shadow:
+        0 5px 30px rgba(0,0,0,.6);
+
+}
+
+
+.subtitle{
+
+    margin-top:15px;
+
+    font-size:
+        clamp(11px,1.3vw,15px);
+
+    letter-spacing:
+        4px;
+
+    opacity:.85;
+
+}
+
+
+/* ゴールドライン */
+
+.gold-line{
+
+    width:
+        min(330px,55vw);
+
+    height:1px;
+
+    margin-top:18px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #d9b86c,
+            transparent
+        );
+
+}
+
+
+/* 表紙 */
+
+.cover-area{
+
+    position:relative;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    animation:
+        coverAppear 1.2s ease forwards;
+
+}
+
+
+/* 表紙の光 */
+
+.cover-area::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:140%;
+
+    height:120%;
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(255,210,130,.18),
+            transparent 65%
+        );
+
+    filter:blur(35px);
+
+    z-index:-1;
+
+}
+
+
+/* 表紙 */
+
+.cover{
+
+    display:block;
+
+    width:
+        min(360px,68vw);
+
+    max-height:
+        55vh;
+
+    object-fit:
+        contain;
+
+    border-radius:3px;
+
+    cursor:pointer;
+
+    box-shadow:
+
+        0 40px 100px rgba(0,0,0,.75),
+
+        0 15px 35px rgba(0,0,0,.55),
+
+        0 0 40px rgba(255,210,130,.08);
+
+    transition:
+        transform .45s ease,
+        box-shadow .45s ease;
+
+}
+
+
+/* マウスを乗せたとき */
+
+.cover:hover{
+
+    transform:
+        translateY(-8px)
+        scale(1.025);
+
+    box-shadow:
+
+        0 50px 110px rgba(0,0,0,.85),
+
+        0 20px 45px rgba(0,0,0,.65),
+
+        0 0 60px rgba(255,210,130,.15);
+
+}
+
+
+/* OPENボタン */
+
+.open-button{
+
+    margin-top:25px;
+
+    min-width:190px;
+
+    padding:14px 45px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-decoration:none;
+
+    color:#f4dfad;
+
+    font-family:
+        Arial,
+        sans-serif;
+
+    font-size:14px;
+
+    font-weight:500;
+
+    letter-spacing:6px;
+
+    background:
+        rgba(5,8,12,.72);
+
+    border:
+        1px solid #d9b86c;
+
+    border-radius:999px;
+
+    backdrop-filter:
+        blur(12px);
+
+    -webkit-backdrop-filter:
+        blur(12px);
+
+    box-shadow:
+
+        0 15px 35px rgba(0,0,0,.45),
+
+        0 0 20px rgba(217,184,108,.08);
+
+    transition:
+        all .3s ease;
+
+}
+
+
+/* ボタンホバー */
+
+.open-button:hover{
+
+    color:white;
+
+    background:
+        rgba(217,184,108,.15);
+
+    box-shadow:
+
+        0 20px 45px rgba(0,0,0,.6),
+
+        0 0 30px rgba(217,184,108,.15);
+
+    transform:
+        translateY(-3px);
+
+}
+
+
+/* 下の説明 */
+
+.description{
+
+    margin-top:14px;
+
+    font-family:
+        "Yu Mincho",
+        serif;
+
+    font-size:11px;
+
+    letter-spacing:2px;
+
+    opacity:.65;
+
+}
+
+
+/* アニメーション */
+
+@keyframes fadeDown{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(-20px);
+
     }
 
-    .since {
-      position: absolute;
+    to{
 
-      bottom: 8px;
+        opacity:1;
 
-      font-size: 9px;
+        transform:
+            translateY(0);
 
-      letter-spacing: 3px;
-
-      opacity: 0.4;
     }
 
-    @keyframes coverAppear {
-      from {
-        opacity: 0;
-        transform: translateY(25px) scale(0.96);
-      }
+}
 
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
+
+@keyframes coverAppear{
+
+    from{
+
+        opacity:0;
+
+        transform:
+            translateY(25px)
+            scale(.96);
+
     }
 
-    @keyframes fadeDown {
-      from {
-        opacity: 0;
-        transform: translateY(-15px);
-      }
+    to{
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+        opacity:1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
     }
 
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
+}
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+
+/* スマホ */
+
+@media(max-width:600px){
+
+    .page{
+
+        padding:
+            15px;
+
     }
 
-    /* スマホ */
-    @media (max-width: 600px) {
 
-      .page {
-        padding: 20px 15px;
-      }
+    .header{
 
-      .small-title {
-        font-size: 9px;
-        letter-spacing: 3px;
-      }
+        margin-bottom:
+            15px;
 
-      h1 {
-        font-size: 26px;
-        letter-spacing: 4px;
-      }
-
-      .subtitle {
-        font-size: 10px;
-        letter-spacing: 2px;
-      }
-
-      .title-area {
-        margin-bottom: 18px;
-      }
-
-      .cover {
-        width: min(300px, 78vw);
-        max-height: 52vh;
-      }
-
-      .open-button {
-        margin-top: 22px;
-        min-width: 210px;
-        padding: 13px 22px;
-        font-size: 11px;
-      }
-
-      .bottom-line {
-        bottom: 20px;
-      }
-
-      .since {
-        bottom: 5px;
-      }
     }
-  </style>
+
+
+    .team-name{
+
+        font-size:9px;
+
+        letter-spacing:3px;
+
+    }
+
+
+    .title{
+
+        font-size:34px;
+
+        letter-spacing:5px;
+
+    }
+
+
+    .subtitle{
+
+        font-size:10px;
+
+        letter-spacing:2px;
+
+        margin-top:10px;
+
+    }
+
+
+    .gold-line{
+
+        margin-top:12px;
+
+    }
+
+
+    .cover{
+
+        width:
+            min(290px,76vw);
+
+        max-height:
+            53vh;
+
+    }
+
+
+    .open-button{
+
+        margin-top:20px;
+
+        min-width:170px;
+
+        padding:12px 35px;
+
+        font-size:12px;
+
+        letter-spacing:5px;
+
+    }
+
+
+    .description{
+
+        font-size:9px;
+
+        letter-spacing:1px;
+
+    }
+
+}
+
+</style>
 </head>
+
 
 <body>
 
-  <main class="page">
 
-    <div class="title-area">
+<main class="page">
 
-      <div class="small-title">
-        KANSEI GAKUIN UNIVERSITY SKI TEAM
-      </div>
 
-      <h1>2026 DIGITAL BUHOU</h1>
+    <!-- 上部タイトル -->
 
-      <div class="subtitle">
-        関西学院大学体育会スキー競技部
-      </div>
+    <div class="header">
+
+        <div class="team-name">
+
+            KWANSEI GAKUIN UNIVERSITY SKI TEAM
+
+        </div>
+
+
+        <h1 class="title">
+
+            2026 DIGITAL 部報
+
+        </h1>
+
+
+        <div class="subtitle">
+
+            関西学院大学体育会スキー競技部
+
+        </div>
+
+
+        <div class="gold-line"></div>
 
     </div>
+
+
+
+    <!-- 表紙 -->
 
     <div class="cover-area">
 
-      <img
-        src="cover.png"
-        class="cover"
-        alt="2026 DIGITAL BUHOU 表紙"
-        onclick="openBook()"
-      >
+        <img
+            src="cover.png"
+            class="cover"
+            alt="2026 部報 表紙"
+            onclick="openBook()"
+        >
 
     </div>
+
+
+
+    <!-- OPEN -->
 
     <a
-      href="viewer.html"
-      class="open-button"
+        href="viewer.html"
+        class="open-button"
     >
-      <span>📖</span>
-      OPEN DIGITAL BUHOU
+
+        OPEN
+
     </a>
 
-    <div class="bottom-line"></div>
 
-    <div class="since">
-      SINCE 1889
+
+    <!-- 説明 -->
+
+    <div class="description">
+
+        表紙をクリック、またはOPENをクリックしてご覧ください
+
     </div>
 
-  </main>
 
-  <script>
-    function openBook() {
-      window.location.href = "viewer.html";
-    }
-  </script>
+</main>
+
+
+
+<script>
+
+function openBook(){
+
+    window.location.href =
+        "viewer.html";
+
+}
+
+</script>
+
 
 </body>
 </html>
