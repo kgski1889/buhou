@@ -196,7 +196,7 @@ pageNumber.innerHTML =
 
 });
     
-  // 2本指ピンチ ＋ 拡大中の1本指スクロール
+// 2本指ピンチ ＋ 拡大中の1本指スクロール
 
 let pinchStartDistance = 0;
 let currentScale = 1;
@@ -234,9 +234,9 @@ function updateTransform(){
 
 /* タッチ開始 */
 
-book.addEventListener("touchstart", function(e){
+document.addEventListener("touchstart", function(e){
 
-    /* 拡大中 ＋ 1本指 → 移動 */
+    /* 拡大中の1本指 */
 
     if(
         currentScale > 1 &&
@@ -249,12 +249,13 @@ book.addEventListener("touchstart", function(e){
         lastY = e.touches[0].clientY;
 
         e.preventDefault();
+        e.stopImmediatePropagation();
 
         return;
     }
 
 
-    /* 2本指 → ピンチ開始 */
+    /* 2本指 */
 
     if(e.touches.length === 2){
 
@@ -264,6 +265,7 @@ book.addEventListener("touchstart", function(e){
         isPanning = false;
 
         e.preventDefault();
+        e.stopImmediatePropagation();
 
     }
 
@@ -275,7 +277,7 @@ book.addEventListener("touchstart", function(e){
 
 /* タッチ移動 */
 
-book.addEventListener("touchmove", function(e){
+document.addEventListener("touchmove", function(e){
 
     /* 拡大中の1本指移動 */
 
@@ -306,6 +308,7 @@ book.addEventListener("touchmove", function(e){
         updateTransform();
 
         e.preventDefault();
+        e.stopImmediatePropagation();
 
         return;
     }
@@ -314,8 +317,6 @@ book.addEventListener("touchmove", function(e){
     /* 2本指ピンチ */
 
     if(e.touches.length === 2){
-
-        e.preventDefault();
 
         const distance =
             getDistance(e.touches);
@@ -342,6 +343,10 @@ book.addEventListener("touchmove", function(e){
 
             pinchStartDistance =
                 distance;
+
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
         }
 
     }
@@ -354,12 +359,11 @@ book.addEventListener("touchmove", function(e){
 
 /* タッチ終了 */
 
-book.addEventListener("touchend", function(e){
+document.addEventListener("touchend", function(e){
 
     if(e.touches.length === 0){
 
         pinchStartDistance = 0;
-
         isPanning = false;
 
     }
