@@ -196,61 +196,177 @@ pageNumber.innerHTML =
 
 });
     
-    // 2本指ピンチで拡大・縮小
+  // 2本指ピンチ ＋ 拡大中の1本指スクロール
+
 let pinchStartDistance = 0;
 let currentScale = 1;
 
+let translateX = 0;
+let translateY = 0;
+
+let lastX = 0;
+let lastY = 0;
+
+let isPanning = false;
+
+
 function getDistance(touches){
-    const dx = touches[0].clientX - touches[1].clientX;
-    const dy = touches[0].clientY - touches[1].clientY;
+
+    const dx =
+        touches[0].clientX -
+        touches[1].clientX;
+
+    const dy =
+        touches[0].clientY -
+        touches[1].clientY;
 
     return Math.sqrt(dx * dx + dy * dy);
 }
 
+
+function updateTransform(){
+
+    book.style.transform =
+        `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
+
+}
+
+
+/* タッチ開始 */
+
 book.addEventListener("touchstart", function(e){
 
-    if(e.touches.length === 2){
-        pinchStartDistance = getDistance(e.touches);
+    /* 拡大中 ＋ 1本指 → 移動 */
+
+    if(
+        currentScale > 1 &&
+        e.touches.length === 1
+    ){
+
+        isPanning = true;
+
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+
+        e.preventDefault();
+
+        return;
     }
 
-}, {passive:false});
 
+    /* 2本指 → ピンチ開始 */
+
+    if(e.touches.length === 2){
+
+        pinchStartDistance =
+            getDistance(e.touches);
+
+        isPanning = false;
+
+        e.preventDefault();
+
+    }
+
+}, {
+    passive:false,
+    capture:true
+});
+
+
+/* タッチ移動 */
 
 book.addEventListener("touchmove", function(e){
+
+    /* 拡大中の1本指移動 */
+
+    if(
+        currentScale > 1 &&
+        e.touches.length === 1 &&
+        isPanning
+    ){
+
+        const x =
+            e.touches[0].clientX;
+
+        const y =
+            e.touches[0].clientY;
+
+
+        translateX +=
+            x - lastX;
+
+        translateY +=
+            y - lastY;
+
+
+        lastX = x;
+        lastY = y;
+
+
+        updateTransform();
+
+        e.preventDefault();
+
+        return;
+    }
+
+
+    /* 2本指ピンチ */
 
     if(e.touches.length === 2){
 
         e.preventDefault();
 
-        const distance = getDistance(e.touches);
+        const distance =
+            getDistance(e.touches);
+
 
         if(pinchStartDistance > 0){
 
-            const ratio = distance / pinchStartDistance;
+            const ratio =
+                distance / pinchStartDistance;
+
 
             currentScale *= ratio;
 
-            currentScale = Math.min(
-                Math.max(currentScale, 1),
-                2
-            );
 
-            book.style.transform =
-                `scale(${currentScale})`;
+            currentScale =
+                Math.min(
+                    Math.max(currentScale, 1),
+                    2
+                );
 
-            pinchStartDistance = distance;
+
+            updateTransform();
+
+
+            pinchStartDistance =
+                distance;
         }
+
     }
 
-}, {passive:false});
+}, {
+    passive:false,
+    capture:true
+});
 
+
+/* タッチ終了 */
 
 book.addEventListener("touchend", function(e){
 
-    if(e.touches.length < 2){
+    if(e.touches.length === 0){
+
         pinchStartDistance = 0;
+
+        isPanning = false;
+
     }
 
+}, {
+    passive:false,
+    capture:true
 });
 </script>
 
