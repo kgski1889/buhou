@@ -340,6 +340,12 @@ document.addEventListener("touchmove", function(e){
                     Math.max(currentScale, 1),
                     2
                 );
+              if(currentScale === 1){
+
+    translateX = 0;
+    translateY = 0;
+
+}
 
 
             updateTransform();
