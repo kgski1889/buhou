@@ -303,15 +303,27 @@ body::after{
 
     display:block;
 
-    width:
-        min(360px,67vw);
+    height:min(53vh, 620px);
 
-    max-height:
-        53vh;
+    width:auto;
+
+    max-width:78vw;
 
     object-fit:contain;
 
     cursor:pointer;
+
+    border-radius:2px;
+
+    box-shadow:
+        0 35px 70px rgba(0,0,0,.75),
+        0 12px 25px rgba(0,0,0,.55),
+        0 0 1px rgba(255,255,255,.7);
+
+    transition:
+        transform .4s ease,
+        box-shadow .4s ease;
+}
 
     border-radius:2px;
 
@@ -545,14 +557,15 @@ body::after{
 
     }
 
-    .cover{
+   .cover{
 
-        width:
-            min(300px,76vw);
+    height:52vh;
 
-        max-height:52vh;
+    width:auto;
 
-    }
+    max-width:82vw;
+
+}
 
     .open-button{
 
