@@ -195,23 +195,7 @@ pageNumber.innerHTML =
 `${e.data + 1} / 32`;
 
 });
-    let zoom = 1;
-
-document.getElementById("zoomIn").onclick=()=>{
-
-zoom +=0.1;
-
-document.getElementById("book").style.transform=`scale(${zoom})`;
-
-}
-
-document.getElementById("zoomOut").onclick=()=>{
-
-zoom=Math.max(.5,zoom-.1);
-
-document.getElementById("book").style.transform=`scale(${zoom})`;
-
-}
+    
     // 2本指ピンチで拡大・縮小
 let pinchStartDistance = 0;
 let currentScale = 1;
