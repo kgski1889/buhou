@@ -632,13 +632,55 @@ if(isTouchDevice){
     );
 
 }
-      /* =========================
+    /* =========================
    PC専用：クリックでページ移動
+   ※ドラッグ操作はそのまま残す
 ========================= */
 
-if(isPC){
+if(!isTouchDevice){
+
+    let mouseStartX = 0;
+    let mouseStartY = 0;
+    let mouseMoved = false;
+
+    book.addEventListener("mousedown", function(e){
+
+        mouseStartX = e.clientX;
+        mouseStartY = e.clientY;
+        mouseMoved = false;
+
+    });
+
+    book.addEventListener("mousemove", function(e){
+
+        const moveX =
+            Math.abs(e.clientX - mouseStartX);
+
+        const moveY =
+            Math.abs(e.clientY - mouseStartY);
+
+        if(moveX > 8 || moveY > 8){
+
+            mouseMoved = true;
+
+        }
+
+    });
 
     book.addEventListener("click", function(e){
+
+        /*
+          マウスをドラッグした場合は
+          PageFlipに任せる
+        */
+
+        if(mouseMoved){
+
+            mouseMoved = false;
+
+            return;
+
+        }
 
         const rect =
             book.getBoundingClientRect();
@@ -649,11 +691,22 @@ if(isPC){
         const center =
             rect.width / 2;
 
+
+        /*
+          右半分 → 次のページ
+        */
+
         if(clickX > center){
 
             pageFlip.flipNext();
 
-        }else{
+        }
+
+        /*
+          左半分 → 前のページ
+        */
+
+        else{
 
             pageFlip.flipPrev();
 
