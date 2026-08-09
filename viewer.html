@@ -193,7 +193,8 @@ for(let i = 1; i <= 32; i++){
 const isTouchDevice =
     "ontouchstart" in window ||
     navigator.maxTouchPoints > 0;
-
+const isPC =
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 const pageFlip = new St.PageFlip(book, {
 
@@ -635,7 +636,7 @@ if(isTouchDevice){
    PC専用：クリックでページ移動
 ========================= */
 
-if(!isTouchDevice){
+if(isPC){
 
     book.addEventListener("click", function(e){
 
