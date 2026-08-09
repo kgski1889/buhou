@@ -631,6 +631,36 @@ if(isTouchDevice){
     );
 
 }
+      /* =========================
+   PC専用：クリックでページ移動
+========================= */
+
+if(!isTouchDevice){
+
+    book.addEventListener("click", function(e){
+
+        const rect =
+            book.getBoundingClientRect();
+
+        const clickX =
+            e.clientX - rect.left;
+
+        const center =
+            rect.width / 2;
+
+        if(clickX > center){
+
+            pageFlip.flipNext();
+
+        }else{
+
+            pageFlip.flipPrev();
+
+        }
+
+    });
+
+}
 </script>
 
 </body>
