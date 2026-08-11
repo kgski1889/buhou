@@ -263,7 +263,7 @@ pageFlip.on("flip", (e)=>{
    スマホ操作
 ========================= */
 
-if(!isMobile){
+if(isMobile){
 
     let startX = 0;
 
@@ -647,7 +647,7 @@ if(currentScale > 1){
    ※ドラッグ操作はそのまま残す
 ========================= */
 
-if(!isTouchDevice){
+if(isPC){
 
     let mouseStartX = 0;
     let mouseStartY = 0;
