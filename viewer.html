@@ -390,6 +390,17 @@ if(!isMobile){
         "touchmove",
         function(e){
 
+              /* =========================
+   ズーム中はページめくり完全禁止
+========================= */
+
+if(currentScale > 1){
+
+    e.preventDefault();
+    e.stopPropagation();
+
+}
+
             /*
               2本指
               ↓
