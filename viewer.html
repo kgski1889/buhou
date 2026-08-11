@@ -190,9 +190,8 @@ for(let i = 1; i <= 32; i++){
    PageFlip
 ========================= */
 
-const isTouchDevice =
-    "ontouchstart" in window ||
-    navigator.maxTouchPoints > 0;
+const isMobile =
+    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
 const isPC =
     window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
@@ -223,6 +222,8 @@ const pageFlip = new St.PageFlip(book, {
     autoSize:true,
 
     maxShadowOpacity:0.25,
+
+      useMouseEvents: !isMobile,
 
     /*
       スマホではPageFlip自身に
@@ -262,7 +263,7 @@ pageFlip.on("flip", (e)=>{
    スマホ操作
 ========================= */
 
-if(isTouchDevice){
+if(!isMobile){
 
     let startX = 0;
 
