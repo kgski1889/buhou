@@ -644,7 +644,36 @@ if(currentScale > 1){
     );
 
 }
- 
+ /* =========================
+   PC専用：クリックで1見開き移動
+========================= */
+
+if(isPC){
+
+    book.addEventListener("click", function(e){
+
+        const rect =
+            book.getBoundingClientRect();
+
+        const clickX =
+            e.clientX - rect.left;
+
+        const center =
+            rect.width / 2;
+
+        if(clickX > center){
+
+            pageFlip.flipNext();
+
+        }else{
+
+            pageFlip.flipPrev();
+
+        }
+
+    });
+
+}
 </script>
 
 </body>
