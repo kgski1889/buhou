@@ -539,11 +539,17 @@ book.addEventListener(
         isPanning = false;
 
     },
-    {
+      {
         passive:false,
         capture:true
     }
 );
+
+}   // ← ★これを追加
+
+/* =========================
+   PC専用：クリックで1見開き移動
+========================= */
 
 if(isPC){
 
