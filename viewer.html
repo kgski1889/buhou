@@ -171,44 +171,43 @@ const book = document.getElementById("book");
 for(let i = 1; i <= 32; i++){
 
     const p = document.createElement("div");
-
     p.className = "page";
 
     const img = document.createElement("img");
-
     img.src = `images/${i}.png`;
-
     img.alt = `Page ${i}`;
 
     p.appendChild(img);
-
     book.appendChild(p);
 }
+
+
+/* =========================
+   端末判定
+========================= */
+
+const isTouchDevice =
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0;
+
+const isPC = !isTouchDevice;
 
 
 /* =========================
    PageFlip
 ========================= */
 
-const isMobile =
-    window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-const isPC =
-    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-
 const pageFlip = new St.PageFlip(book, {
 
     width:700,
-
     height:990,
 
     size:"stretch",
 
     minWidth:315,
-
     maxWidth:1200,
 
     minHeight:420,
-
     maxHeight:1600,
 
     showCover:true,
@@ -223,20 +222,18 @@ const pageFlip = new St.PageFlip(book, {
 
     maxShadowOpacity:0.25,
 
-     useMouseEvents: false,
-      
-      disableFlipByClick: true,
-
     /*
-      スマホではPageFlip自身に
-      タッチ操作をさせない。
+      PCではPageFlipの
+      マウス操作を使用。
 
-      PCでは今まで通り
-      マウス操作を使う。
+      スマホでは自分で
+      スワイプ操作を処理する。
     */
+    useMouseEvents: isPC,
+
+    disableFlipByClick: true,
 
     swipeDistance:50
-
 });
 
 
@@ -252,7 +249,6 @@ pageFlip.loadFromHTML(
 const pageNumber =
     document.getElementById("pageNumber");
 
-
 pageFlip.on("flip", (e)=>{
 
     pageNumber.innerHTML =
@@ -261,18 +257,16 @@ pageFlip.on("flip", (e)=>{
 });
 
 
-/* =========================
+/* ==================================================
    スマホ操作
-========================= */
+================================================== */
 
-if(isMobile){
+if(isTouchDevice){
 
     let startX = 0;
-
     let startY = 0;
 
     let lastX = 0;
-
     let lastY = 0;
 
     let pinchStartDistance = 0;
@@ -280,17 +274,17 @@ if(isMobile){
     let currentScale = 1;
 
     let translateX = 0;
-
     let translateY = 0;
 
     let isPinching = false;
-
     let isPanning = false;
 
     let wasTwoFinger = false;
 
 
-    /* 2本の指の距離 */
+    /* =========================
+       2本の指の距離
+    ========================= */
 
     function getDistance(touches){
 
@@ -305,17 +299,17 @@ if(isMobile){
         return Math.sqrt(
             dx * dx + dy * dy
         );
-
     }
 
 
-    /* 表示位置を更新 */
+    /* =========================
+       ズーム・移動を反映
+    ========================= */
 
     function updateTransform(){
 
         book.style.transform =
             `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-
     }
 
 
@@ -323,258 +317,346 @@ if(isMobile){
        タッチ開始
     ========================= */
 
- /* =========================
-   タッチ開始
-========================= */
+    book.addEventListener(
+        "touchstart",
+        function(e){
 
-book.addEventListener(
-    "touchstart",
-    function(e){
+            /* -------------------------
+               2本指
+            ------------------------- */
 
-        /* 2本指 → ズーム開始 */
-        if(e.touches.length >= 2){
+            if(e.touches.length >= 2){
 
-            wasTwoFinger = true;
-            isPinching = true;
-            isPanning = false;
+                wasTwoFinger = true;
 
-            pinchStartDistance =
-                getDistance(e.touches);
+                isPinching = true;
 
-            e.preventDefault();
+                isPanning = false;
 
-            return;
-        }
+                pinchStartDistance =
+                    getDistance(e.touches);
 
-        /* 1本指 */
-        if(e.touches.length === 1){
+                e.preventDefault();
 
-            startX =
-                e.touches[0].clientX;
-
-            startY =
-                e.touches[0].clientY;
-
-            lastX = startX;
-            lastY = startY;
-
-            /* ズーム中なら画像を移動 */
-            if(currentScale > 1){
-
-                isPanning = true;
-
-            }
-
-        }
-
-    },
-    {
-        passive:false,
-        capture:true
-    }
-);
-
-
-/* =========================
-   タッチ移動
-========================= */
-
-book.addEventListener(
-    "touchmove",
-    function(e){
-
-        /* 2本指 → ズーム */
-        if(
-            e.touches.length >= 2 ||
-            isPinching
-        ){
-
-            if(e.touches.length < 2){
                 return;
             }
 
-            const distance =
-                getDistance(e.touches);
 
-            if(pinchStartDistance > 0){
+            /* -------------------------
+               1本指
+            ------------------------- */
 
-                const ratio =
-                    distance / pinchStartDistance;
+            if(e.touches.length === 1){
 
-                currentScale *= ratio;
+                startX =
+                    e.touches[0].clientX;
 
-                currentScale =
-                    Math.min(
-                        Math.max(currentScale, 1),
-                        2
-                    );
+                startY =
+                    e.touches[0].clientY;
 
-                if(currentScale <= 1.01){
+                lastX = startX;
+                lastY = startY;
 
-                    currentScale = 1;
-                    translateX = 0;
-                    translateY = 0;
+
+                /*
+                  ズーム中なら
+                  画像移動モード
+                */
+
+                if(currentScale > 1){
+
+                    isPanning = true;
 
                 }
+            }
+
+        },
+        {
+            passive:false
+        }
+    );
+
+
+    /* =========================
+       タッチ移動
+    ========================= */
+
+    book.addEventListener(
+        "touchmove",
+        function(e){
+
+            /* -------------------------
+               2本指 → ズーム
+            ------------------------- */
+
+            if(
+                e.touches.length >= 2 ||
+                isPinching
+            ){
+
+                if(e.touches.length < 2){
+
+                    return;
+                }
+
+
+                const distance =
+                    getDistance(e);
+
+
+                if(pinchStartDistance > 0){
+
+                    const ratio =
+                        distance /
+                        pinchStartDistance;
+
+
+                    currentScale *= ratio;
+
+
+                    currentScale =
+                        Math.min(
+                            Math.max(
+                                currentScale,
+                                1
+                            ),
+                            2
+                        );
+
+
+                    /*
+                      1倍に戻ったら
+                      中央に戻す
+                    */
+
+                    if(currentScale <= 1.01){
+
+                        currentScale = 1;
+
+                        translateX = 0;
+                        translateY = 0;
+                    }
+
+
+                    updateTransform();
+
+
+                    pinchStartDistance =
+                        distance;
+                }
+
+
+                e.preventDefault();
+
+                e.stopPropagation();
+
+                return;
+            }
+
+
+            /* -------------------------
+               ズーム中の1本指
+               → 画像を移動
+            ------------------------- */
+
+            if(
+                currentScale > 1 &&
+                isPanning &&
+                e.touches.length === 1
+            ){
+
+                const x =
+                    e.touches[0].clientX;
+
+                const y =
+                    e.touches[0].clientY;
+
+
+                translateX +=
+                    x - lastX;
+
+                translateY +=
+                    y - lastY;
+
+
+                lastX = x;
+                lastY = y;
+
 
                 updateTransform();
 
-                pinchStartDistance = distance;
 
+                e.preventDefault();
+
+                e.stopPropagation();
+
+                return;
             }
 
-            e.preventDefault();
-            e.stopPropagation();
-
-            return;
+        },
+        {
+            passive:false
         }
+    );
 
 
-        /* ズーム中の1本指 → 画像移動 */
-        if(
-            currentScale > 1 &&
-            isPanning &&
-            e.touches.length === 1
-        ){
+    /* =========================
+       タッチ終了
+    ========================= */
 
-            const x =
-                e.touches[0].clientX;
+    book.addEventListener(
+        "touchend",
+        function(e){
 
-            const y =
-                e.touches[0].clientY;
+            /*
+              まだ指が残っている
+            */
 
-            translateX += x - lastX;
-            translateY += y - lastY;
+            if(e.touches.length > 0){
 
-            lastX = x;
-            lastY = y;
-
-            updateTransform();
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            return;
-        }
-
-    },
-    {
-        passive:false,
-        capture:true
-    }
-);
+                return;
+            }
 
 
-/* =========================
-   タッチ終了
-========================= */
+            /* -------------------------
+               2本指操作終了
+               → 絶対にページをめくらない
+            ------------------------- */
 
-book.addEventListener(
-    "touchend",
-    function(e){
+            if(wasTwoFinger){
 
-        /* まだ指が残っている */
-        if(e.touches.length > 0){
-            return;
-        }
+                isPinching = false;
+
+                isPanning = false;
+
+                pinchStartDistance = 0;
+
+                wasTwoFinger = false;
+
+                return;
+            }
 
 
-        /* 2本指操作終了 → ページ移動しない */
-        if(wasTwoFinger){
+            /* -------------------------
+               ズーム中
+               → ページをめくらない
+            ------------------------- */
 
-            isPinching = false;
+            if(currentScale > 1){
+
+                isPanning = false;
+
+                return;
+            }
+
+
+            /* =========================
+               1倍・1本指
+               → ページ移動
+            ========================= */
+
+            const endX =
+                e.changedTouches[0].clientX;
+
+            const endY =
+                e.changedTouches[0].clientY;
+
+
+            const deltaX =
+                endX - startX;
+
+            const deltaY =
+                endY - startY;
+
+
+            /*
+              横方向のスワイプだけ判定
+            */
+
+            if(
+                Math.abs(deltaX) > 50 &&
+                Math.abs(deltaX) >
+                Math.abs(deltaY)
+            ){
+
+                /*
+                  左 → 次のページ
+                */
+
+                if(deltaX < 0){
+
+                    pageFlip.flipNext();
+
+                }
+
+                /*
+                  右 → 前のページ
+                */
+
+                else{
+
+                    pageFlip.flipPrev();
+
+                }
+            }
+
+
             isPanning = false;
-            pinchStartDistance = 0;
-            wasTwoFinger = false;
 
-            return;
+        },
+        {
+            passive:false
         }
+    );
+
+}
 
 
-        /* ズーム中の1本指 → ページ移動しない */
-        if(currentScale > 1){
+/* ==================================================
+   PC専用
+   クリックでページ移動
+================================================== */
 
-            isPanning = false;
+if(isPC){
 
-            return;
-        }
+    book.addEventListener(
+        "click",
+        function(e){
 
+            const rect =
+                book.getBoundingClientRect();
 
-        /* =========================
-           1倍・1本指
-           → ページ移動
-        ========================= */
+            const clickX =
+                e.clientX - rect.left;
 
-        const endX =
-            e.changedTouches[0].clientX;
-
-        const endY =
-            e.changedTouches[0].clientY;
-
-        const deltaX =
-            endX - startX;
-
-        const deltaY =
-            endY - startY;
+            const center =
+                rect.width / 2;
 
 
-        if(
-            Math.abs(deltaX) > 50 &&
-            Math.abs(deltaX) >
-            Math.abs(deltaY)
-        ){
+            /*
+              右半分
+              → 次のページ
+            */
 
-            if(deltaX < 0){
+            if(clickX > center){
 
                 pageFlip.flipNext();
 
-            }else{
+            }
+
+            /*
+              左半分
+              → 前のページ
+            */
+
+            else{
 
                 pageFlip.flipPrev();
 
             }
 
         }
-
-        isPanning = false;
-
-    },
-      {
-        passive:false,
-        capture:true
-    }
-);
-
-}  
-
-/* =========================
-   PC専用：クリックで1見開き移動
-========================= */
-
-if(isPC){
-
-    book.addEventListener("click", function(e){
-
-        const rect =
-            book.getBoundingClientRect();
-
-        const clickX =
-            e.clientX - rect.left;
-
-        const center =
-            rect.width / 2;
-
-        if(clickX > center){
-
-            pageFlip.flipNext();
-
-        }else{
-
-            pageFlip.flipPrev();
-
-        }
-
-    });
+    );
 
 }
 </script>
