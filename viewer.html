@@ -323,19 +323,163 @@ if(isMobile){
        タッチ開始
     ========================= */
 
-   /* =========================
+ /* =========================
    タッチ開始
 ========================= */
 
-document.addEventListener(
+book.addEventListener(
+    "touchstart",
+    function(e){
+
+        /* 2本指 → ズーム開始 */
+        if(e.touches.length >= 2){
+
+            wasTwoFinger = true;
+            isPinching = true;
+            isPanning = false;
+
+            pinchStartDistance =
+                getDistance(e.touches);
+
+            e.preventDefault();
+
+            return;
+        }
+
+        /* 1本指 */
+        if(e.touches.length === 1){
+
+            startX =
+                e.touches[0].clientX;
+
+            startY =
+                e.touches[0].clientY;
+
+            lastX = startX;
+            lastY = startY;
+
+            /* ズーム中なら画像を移動 */
+            if(currentScale > 1){
+
+                isPanning = true;
+
+            }
+
+        }
+
+    },
+    {
+        passive:false,
+        capture:true
+    }
+);
+
+
+/* =========================
+   タッチ移動
+========================= */
+
+book.addEventListener(
+    "touchmove",
+    function(e){
+
+        /* 2本指 → ズーム */
+        if(
+            e.touches.length >= 2 ||
+            isPinching
+        ){
+
+            if(e.touches.length < 2){
+                return;
+            }
+
+            const distance =
+                getDistance(e.touches);
+
+            if(pinchStartDistance > 0){
+
+                const ratio =
+                    distance / pinchStartDistance;
+
+                currentScale *= ratio;
+
+                currentScale =
+                    Math.min(
+                        Math.max(currentScale, 1),
+                        2
+                    );
+
+                if(currentScale <= 1.01){
+
+                    currentScale = 1;
+                    translateX = 0;
+                    translateY = 0;
+
+                }
+
+                updateTransform();
+
+                pinchStartDistance = distance;
+
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            return;
+        }
+
+
+        /* ズーム中の1本指 → 画像移動 */
+        if(
+            currentScale > 1 &&
+            isPanning &&
+            e.touches.length === 1
+        ){
+
+            const x =
+                e.touches[0].clientX;
+
+            const y =
+                e.touches[0].clientY;
+
+            translateX += x - lastX;
+            translateY += y - lastY;
+
+            lastX = x;
+            lastY = y;
+
+            updateTransform();
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            return;
+        }
+
+    },
+    {
+        passive:false,
+        capture:true
+    }
+);
+
+
+/* =========================
+   タッチ終了
+========================= */
+
+book.addEventListener(
     "touchend",
     function(e){
 
+        /* まだ指が残っている */
         if(e.touches.length > 0){
             return;
         }
 
-        /* 2本指操作だった場合 */
+
+        /* 2本指操作終了 → ページ移動しない */
         if(wasTwoFinger){
 
             isPinching = false;
@@ -346,7 +490,8 @@ document.addEventListener(
             return;
         }
 
-        /* ズーム中はページをめくらない */
+
+        /* ズーム中の1本指 → ページ移動しない */
         if(currentScale > 1){
 
             isPanning = false;
@@ -354,7 +499,11 @@ document.addEventListener(
             return;
         }
 
-        /* 通常時の1本指スワイプ */
+
+        /* =========================
+           1倍・1本指
+           → ページ移動
+        ========================= */
 
         const endX =
             e.changedTouches[0].clientX;
@@ -367,6 +516,7 @@ document.addEventListener(
 
         const deltaY =
             endY - startY;
+
 
         if(
             Math.abs(deltaX) > 50 &&
@@ -394,153 +544,6 @@ document.addEventListener(
         capture:true
     }
 );
-    /* =========================
-       タッチ移動
-    ========================= */
-
-    book.addEventListener(
-        "touchmove",
-        function(e){
-
-              /* =========================
-   ズーム中はページめくり完全禁止
-========================= */
-
-if(currentScale > 1){
-
-    e.preventDefault();
-    e.stopPropagation();
-
-}
-
-            /*
-              2本指
-              ↓
-              ズームだけ
-            */
-
-            if(
-                e.touches.length >= 2 ||
-                isPinching
-            ){
-
-                if(e.touches.length < 2){
-
-                    return;
-
-                }
-
-
-                const distance =
-                    getDistance(e.touches);
-
-
-                if(pinchStartDistance > 0){
-
-                    const ratio =
-                        distance /
-                        pinchStartDistance;
-
-
-                    currentScale *= ratio;
-
-
-                    currentScale =
-                        Math.min(
-                            Math.max(
-                                currentScale,
-                                1
-                            ),
-                            2
-                        );
-
-
-                    /*
-                      1倍に戻ったら
-                      必ず中央へ
-                    */
-
-                    if(currentScale <= 1.01){
-
-                        currentScale = 1;
-
-                        translateX = 0;
-
-                        translateY = 0;
-
-                    }
-
-
-                    updateTransform();
-
-
-                    pinchStartDistance =
-                        distance;
-
-                }
-
-
-                e.preventDefault();
-
-                return;
-            }
-
-
-            /*
-              ズーム中の1本指
-              ↓
-              ページを移動
-            */
-
-            if(
-                currentScale > 1 &&
-                isPanning &&
-                e.touches.length === 1
-            ){
-
-                const x =
-                    e.touches[0].clientX;
-
-                const y =
-                    e.touches[0].clientY;
-
-
-                translateX +=
-                    x - lastX;
-
-
-                translateY +=
-                    y - lastY;
-
-
-                lastX = x;
-
-                lastY = y;
-
-
-                updateTransform();
-
-
-                e.preventDefault();
-
-            }
-
-        },
-        {
-            passive:false,
-              capture:true
-        }
-    );
-
-
-    /* =========================
-       タッチ終了
-    ========================= */
-
-   
- /* =========================
-   PC専用：クリックで1見開き移動
-========================= */
 
 if(isPC){
 
