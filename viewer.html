@@ -323,72 +323,61 @@ if(isMobile){
        タッチ開始
     ========================= */
 
-   document.addEventListener(
-    "touchend",
+   /* =========================
+   タッチ開始
+========================= */
+
+book.addEventListener(
+    "touchstart",
     function(e){
 
-        /* まだ指が残っている場合 */
-        if(e.touches.length > 0){
-            return;
-        }
+        /* 2本指になった瞬間 */
 
-        /* 2本指操作だった場合 */
-        if(wasTwoFinger){
+        if(e.touches.length >= 2){
 
-            isPinching = false;
-            isPanning = false;
-            pinchStartDistance = 0;
-            wasTwoFinger = false;
+            wasTwoFinger = true;
 
-            return;
-        }
-
-        /* ズーム中はページをめくらない */
-        if(currentScale > 1){
+            isPinching = true;
 
             isPanning = false;
 
+            pinchStartDistance =
+                getDistance(e.touches);
+
+            e.preventDefault();
+
             return;
         }
 
-        /* 通常時の1本指スワイプ */
 
-        const endX =
-            e.changedTouches[0].clientX;
+        /* 1本指 */
 
-        const endY =
-            e.changedTouches[0].clientY;
+        if(e.touches.length === 1){
 
-        const deltaX =
-            endX - startX;
+            startX =
+                e.touches[0].clientX;
 
-        const deltaY =
-            endY - startY;
+            startY =
+                e.touches[0].clientY;
 
-        if(
-            Math.abs(deltaX) > 50 &&
-            Math.abs(deltaX) >
-            Math.abs(deltaY)
-        ){
+            lastX = startX;
 
-            if(deltaX < 0){
+            lastY = startY;
 
-                pageFlip.flipNext();
 
-            }else{
+            /* ズーム中なら画像を移動 */
 
-                pageFlip.flipPrev();
+            if(currentScale > 1){
+
+                isPanning = true;
 
             }
 
         }
 
-        isPanning = false;
-
     },
     {
-        passive:false,
-        capture:true
+        passive:false
     }
 );
 
