@@ -278,7 +278,6 @@ if(isTouchDevice){
 
     let isPinching = false;
     let isPanning = false;
-
     let wasTwoFinger = false;
 
 
@@ -303,7 +302,7 @@ if(isTouchDevice){
 
 
     /* =========================
-       ズーム・移動を反映
+       表示位置
     ========================= */
 
     function updateTransform(){
@@ -317,13 +316,11 @@ if(isTouchDevice){
        タッチ開始
     ========================= */
 
-    book.addEventListener(
+    document.addEventListener(
         "touchstart",
         function(e){
 
-            /* -------------------------
-               2本指
-            ------------------------- */
+            /* 2本指 → ズーム */
 
             if(e.touches.length >= 2){
 
@@ -334,17 +331,16 @@ if(isTouchDevice){
                 isPanning = false;
 
                 pinchStartDistance =
-                    getDistance(e.touches);
+                    getDistance(e);
 
                 e.preventDefault();
+                e.stopImmediatePropagation();
 
                 return;
             }
 
 
-            /* -------------------------
-               1本指
-            ------------------------- */
+            /* 1本指 */
 
             if(e.touches.length === 1){
 
@@ -358,21 +354,21 @@ if(isTouchDevice){
                 lastY = startY;
 
 
-                /*
-                  ズーム中なら
-                  画像移動モード
-                */
+                /* ズーム中なら画像移動 */
 
                 if(currentScale > 1){
 
                     isPanning = true;
 
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
                 }
             }
 
         },
         {
-            passive:false
+            passive:false,
+            capture:true
         }
     );
 
@@ -381,7 +377,7 @@ if(isTouchDevice){
        タッチ移動
     ========================= */
 
-    book.addEventListener(
+    document.addEventListener(
         "touchmove",
         function(e){
 
@@ -395,7 +391,6 @@ if(isTouchDevice){
             ){
 
                 if(e.touches.length < 2){
-
                     return;
                 }
 
@@ -424,11 +419,6 @@ if(isTouchDevice){
                         );
 
 
-                    /*
-                      1倍に戻ったら
-                      中央に戻す
-                    */
-
                     if(currentScale <= 1.01){
 
                         currentScale = 1;
@@ -447,8 +437,7 @@ if(isTouchDevice){
 
 
                 e.preventDefault();
-
-                e.stopPropagation();
+                e.stopImmediatePropagation();
 
                 return;
             }
@@ -456,7 +445,7 @@ if(isTouchDevice){
 
             /* -------------------------
                ズーム中の1本指
-               → 画像を移動
+               → 画像移動
             ------------------------- */
 
             if(
@@ -487,15 +476,15 @@ if(isTouchDevice){
 
 
                 e.preventDefault();
-
-                e.stopPropagation();
+                e.stopImmediatePropagation();
 
                 return;
             }
 
         },
         {
-            passive:false
+            passive:false,
+            capture:true
         }
     );
 
@@ -504,34 +493,33 @@ if(isTouchDevice){
        タッチ終了
     ========================= */
 
-    book.addEventListener(
+    document.addEventListener(
         "touchend",
         function(e){
 
-            /*
-              まだ指が残っている
-            */
+            /* まだ指が残っている */
 
             if(e.touches.length > 0){
-
                 return;
             }
 
 
             /* -------------------------
                2本指操作終了
-               → 絶対にページをめくらない
+               → ページ移動しない
             ------------------------- */
 
             if(wasTwoFinger){
 
                 isPinching = false;
-
                 isPanning = false;
 
                 pinchStartDistance = 0;
 
                 wasTwoFinger = false;
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
 
                 return;
             }
@@ -539,19 +527,22 @@ if(isTouchDevice){
 
             /* -------------------------
                ズーム中
-               → ページをめくらない
+               → ページ移動しない
             ------------------------- */
 
             if(currentScale > 1){
 
                 isPanning = false;
 
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
                 return;
             }
 
 
             /* =========================
-               1倍・1本指
+               1本指スワイプ
                → ページ移動
             ========================= */
 
@@ -569,19 +560,17 @@ if(isTouchDevice){
                 endY - startY;
 
 
-            /*
-              横方向のスワイプだけ判定
-            */
-
             if(
                 Math.abs(deltaX) > 50 &&
                 Math.abs(deltaX) >
                 Math.abs(deltaY)
             ){
 
-                /*
-                  左 → 次のページ
-                */
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+
+                /* 左 → 次 */
 
                 if(deltaX < 0){
 
@@ -589,9 +578,7 @@ if(isTouchDevice){
 
                 }
 
-                /*
-                  右 → 前のページ
-                */
+                /* 右 → 前 */
 
                 else{
 
@@ -605,12 +592,12 @@ if(isTouchDevice){
 
         },
         {
-            passive:false
+            passive:false,
+            capture:true
         }
     );
 
 }
-
 
 /* ==================================================
    PC専用
