@@ -631,6 +631,102 @@ if(isTouchDevice){
     );
 
 }
+      /* =========================
+   マウス操作
+   ========================= */
+
+let mouseStartX = 0;
+let mouseStartY = 0;
+let mouseDown = false;
+
+book.addEventListener("pointerdown", function(e){
+
+    /*
+      マウスだけを対象にする
+      タッチ・ペンは完全に無視
+    */
+
+    if(e.pointerType !== "mouse"){
+        return;
+    }
+
+    mouseDown = true;
+
+    mouseStartX = e.clientX;
+    mouseStartY = e.clientY;
+
+});
+
+
+book.addEventListener("pointerup", function(e){
+
+    /*
+      マウス以外は完全に無視
+    */
+
+    if(e.pointerType !== "mouse"){
+        return;
+    }
+
+    if(!mouseDown){
+        return;
+    }
+
+    mouseDown = false;
+
+    const deltaX =
+        e.clientX - mouseStartX;
+
+    const deltaY =
+        e.clientY - mouseStartY;
+
+
+    /*
+      横方向に50px以上動いた場合だけ
+      ページをめくる
+    */
+
+    if(
+        Math.abs(deltaX) > 50 &&
+        Math.abs(deltaX) > Math.abs(deltaY)
+    ){
+
+        /*
+          左へドラッグ
+          → 次のページ
+        */
+
+        if(deltaX < 0){
+
+            pageFlip.flipNext();
+
+        }
+
+        /*
+          右へドラッグ
+          → 前のページ
+        */
+
+        else{
+
+            pageFlip.flipPrev();
+
+        }
+
+    }
+
+});
+
+
+book.addEventListener("pointercancel", function(e){
+
+    if(e.pointerType === "mouse"){
+
+        mouseDown = false;
+
+    }
+
+});
 </script>
 
 </body>
