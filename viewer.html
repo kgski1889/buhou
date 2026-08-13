@@ -635,99 +635,52 @@ if(isTouchDevice){
    マウス操作
 ========================= */
 
-let mouseStartX = 0;
-let mouseStartY = 0;
-let mouseDown = false;
-
-book.addEventListener("pointerdown", function(e){
-
-    /* マウス操作だけ */
-
-    if(e.pointerType !== "mouse"){
-        return;
-    }
-
-    mouseDown = true;
-
-    mouseStartX = e.clientX;
-    mouseStartY = e.clientY;
-
-});
-
-
 book.addEventListener("pointerup", function(e){
 
-    /* マウス以外は無視 */
+    /*
+      マウスだけを対象にする
+      タッチ・ペンは完全に無視
+    */
 
     if(e.pointerType !== "mouse"){
         return;
     }
 
-    if(!mouseDown){
-        return;
-    }
 
-    mouseDown = false;
+    /*
+      画面の横幅を取得
+    */
 
-    const deltaX =
-        e.clientX - mouseStartX;
-
-    const deltaY =
-        e.clientY - mouseStartY;
+    const screenWidth = window.innerWidth;
 
 
-    /* =========================
-       クリック
-       → 次のページ
-    ========================= */
+    /*
+      クリックした位置
+    */
 
-    if(
-        Math.abs(deltaX) < 10 &&
-        Math.abs(deltaY) < 10
-    ){
+    const clickX = e.clientX;
+
+
+    /*
+      画面中央より右
+      → 次のページ
+    */
+
+    if(clickX > screenWidth / 2){
 
         pageFlip.flipNext();
 
-        return;
-
     }
 
 
-    /* =========================
-       左右ドラッグ
-    ========================= */
+    /*
+      画面中央より左
+      → 前のページ
+    */
 
-    if(
-        Math.abs(deltaX) > 50 &&
-        Math.abs(deltaX) > Math.abs(deltaY)
-    ){
+    else{
 
-        /* 左へドラッグ → 次 */
-
-        if(deltaX < 0){
-
-            pageFlip.flipNext();
-
-        }
-
-        /* 右へドラッグ → 前 */
-
-        else{
-
-            pageFlip.flipPrev();
-
-        }
-
-    }
-
-});
-
-
-book.addEventListener("pointercancel", function(e){
-
-    if(e.pointerType === "mouse"){
-
-        mouseDown = false;
+        pageFlip.flipPrev();
 
     }
 
