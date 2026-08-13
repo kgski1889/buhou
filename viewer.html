@@ -631,9 +631,9 @@ if(isTouchDevice){
     );
 
 }
-      /* =========================
+/* =========================
    マウス操作
-   ========================= */
+========================= */
 
 let mouseStartX = 0;
 let mouseStartY = 0;
@@ -641,10 +641,7 @@ let mouseDown = false;
 
 book.addEventListener("pointerdown", function(e){
 
-    /*
-      マウスだけを対象にする
-      タッチ・ペンは完全に無視
-    */
+    /* マウス操作だけ */
 
     if(e.pointerType !== "mouse"){
         return;
@@ -660,9 +657,7 @@ book.addEventListener("pointerdown", function(e){
 
 book.addEventListener("pointerup", function(e){
 
-    /*
-      マウス以外は完全に無視
-    */
+    /* マウス以外は無視 */
 
     if(e.pointerType !== "mouse"){
         return;
@@ -681,20 +676,33 @@ book.addEventListener("pointerup", function(e){
         e.clientY - mouseStartY;
 
 
-    /*
-      横方向に50px以上動いた場合だけ
-      ページをめくる
-    */
+    /* =========================
+       クリック
+       → 次のページ
+    ========================= */
+
+    if(
+        Math.abs(deltaX) < 10 &&
+        Math.abs(deltaY) < 10
+    ){
+
+        pageFlip.flipNext();
+
+        return;
+
+    }
+
+
+    /* =========================
+       左右ドラッグ
+    ========================= */
 
     if(
         Math.abs(deltaX) > 50 &&
         Math.abs(deltaX) > Math.abs(deltaY)
     ){
 
-        /*
-          左へドラッグ
-          → 次のページ
-        */
+        /* 左へドラッグ → 次 */
 
         if(deltaX < 0){
 
@@ -702,10 +710,7 @@ book.addEventListener("pointerup", function(e){
 
         }
 
-        /*
-          右へドラッグ
-          → 前のページ
-        */
+        /* 右へドラッグ → 前 */
 
         else{
 
